@@ -20,6 +20,21 @@ vite.config.js      # Vite config
 vercel.json         # Vercel deployment
 ```
 
+## ▶️ How to Run the Project
+
+This is a **Vite + React** application that uses **OAuth authentication** and includes an **Ad Creation Form**.
+
+### Prerequisites
+- Node.js (v18+ recommended)
+- npm or yarn
+
+### Setup
+```bash
+npm install
+npm run dev
+
+```
+
 # Part 2
 
 # OAuth 2.0 Implementation: TikTok Ads Manager
