@@ -1,10 +1,16 @@
 import { isAuthenticated, logout } from "../utils/storage";
+import { generateCodeVerifier, generateCodeChallenge, storeVerifier } from "../utils/pkce";
 
 export default function Home() {
   const loggedIn = isAuthenticated();
 
-  const loginWithTikTok = () => {
+  const loginWithTikTok = async () => {
+    // Generate PKCE codes
+    const verifier = generateCodeVerifier();
+    const challenge = await generateCodeChallenge(verifier);
 
+    // Store verifier for later use
+    storeVerifier(verifier);
 
     const params = new URLSearchParams({
       client_key: import.meta.env.VITE_TIKTOK_CLIENT_KEY,
@@ -12,6 +18,8 @@ export default function Home() {
       scope: "user.info.basic",
       redirect_uri: import.meta.env.VITE_REDIRECT_URI,
       state: crypto.randomUUID(),
+      code_challenge: challenge,
+      code_challenge_method: "S256",
     });
 
     window.location.href =
