@@ -1,3 +1,9 @@
+/*
+ * 1. Simulates an Async API call with network latency (setTimeout) to test loading states.
+ * 2. Enforces Business Logic (e.g., "Conversions need Music") mimicking server-side validation.
+ * 3. Randomly triggers errors (Geo-blocking) to test the robustness of the frontend error UI.
+ */
+
 export function submitAd(payload) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {

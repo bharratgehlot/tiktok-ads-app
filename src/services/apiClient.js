@@ -1,3 +1,9 @@
+/*
+ * 1. Automatically injects the 'Authorization: Bearer <token>' header into every request.
+ * 2. Centralizes error handling for common auth failures (401 Session Expired, 403 Permission Denied).
+ * 3. Standardizes the "Content-Type" to JSON, ensuring consistent data formatting for backend communication.
+ */
+
 import { getAuthToken } from "../utils/storage";
 
 export async function apiFetch(url, options = {}) {

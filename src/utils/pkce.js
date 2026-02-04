@@ -1,3 +1,9 @@
+/*
+ * 1. Generates the cryptographic `code_verifier` and `code_challenge` required for secure OAuth flows.
+ * 2. Handles Base64 URL encoding to ensure the keys are safe to send in URL parameters.
+ * 3. Manages `sessionStorage` for the verifier, ensuring it persists during the redirect but can be cleared after use.
+ */
+
 // Generate random code verifier
 export function generateCodeVerifier() {
   const array = new Uint8Array(32);

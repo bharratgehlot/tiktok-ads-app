@@ -1,3 +1,10 @@
+/*
+ * TEST MODE: OAuthCallback.jsx
+ * 1. Logs all incoming parameters.
+ * 2. Checks for Verifier in storage.
+ * 3. Attempts to call the Backend API (/api/oauth) for token exchange.
+ */
+
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { saveToken } from "../utils/storage";
@@ -8,58 +15,82 @@ export default function OAuthCallback() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // --- 🧪 TEST LOG 1: Check URL Parameters ---
     const code = params.get("code");
     const error = params.get("error");
 
-    console.log("TikTok OAuth Code:", code);
-    console.log("TikTok OAuth Error:", error);
+    console.log("%c1. 📥 Callback Received", "color: cyan; font-weight: bold;");
+    console.log("   Code:", code ? "✅ Present" : "❌ Missing");
+    console.log("   Error:", error || "None");
 
     if (error || !code) {
-      alert("Authorization failed");
-      navigate("/");
+      console.error("❌ Authorization failed at TikTok level");
+      alert("Authorization failed (See Console)");
+      // navigate("/"); // ⏸️ Commented out for debugging
       return;
     }
 
+    // --- 🧪 TEST LOG 2: Check Session Storage ---
     const verifier = getVerifier();
+    console.log("%c2. 🔐 Verifier Check", "color: cyan; font-weight: bold;");
+    console.log("   Verifier:", verifier ? "✅ Found in Storage" : "❌ Missing (Session Lost?)");
+
     if (!verifier) {
-      alert("Session error. Please try again.");
-      navigate("/");
+      console.error("❌ No verifier found. Did you skip the Home page login click?");
+      alert("Session error (See Console)");
+      // navigate("/"); // ⏸️ Commented out for debugging
       return;
     }
 
-    // Exchange code for token directly with TikTok
-    fetch("https://open.tiktokapis.com/v2/oauth/token/", {
+    // --- 🧪 TEST LOG 3: Initiate Backend Exchange ---
+    console.log("%c3. 🚀 Sending to Backend (/api/oauth)", "color: cyan; font-weight: bold;");
+
+    // We switch this to call YOUR backend, as calling TikTok directly from browser usually fails CORS
+    fetch("/api/oauth", {
       method: "POST",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
       },
-      body: new URLSearchParams({
-        client_key: import.meta.env.VITE_TIKTOK_CLIENT_KEY,
+      body: JSON.stringify({
         code: code,
-        grant_type: "authorization_code",
-        redirect_uri: import.meta.env.VITE_REDIRECT_URI,
-        code_verifier: verifier,
+        code_verifier: verifier, // Sending verifier for PKCE check
       }),
     })
-      .then((res) => res.json())
+      .then((res) => {
+        console.log("   HTTP Status:", res.status);
+        return res.json();
+      })
       .then((data) => {
-        console.log("Token exchange response:", data);
+        // --- 🧪 TEST LOG 4: Handle Response ---
+        console.log("%c4. 📦 Backend Response", "color: cyan; font-weight: bold;", data);
 
-        if (!data.access_token) {
-          throw new Error(data.error_description || "Token exchange failed");
+        if (!data.success && !data.access_token) {
+          // Handle both your backend error format OR direct TikTok error format
+          throw new Error(data.error || data.error_description || "Token exchange failed");
         }
 
-        saveToken(data.access_token);
+        const token = data.data?.access_token || data.access_token;
+        console.log("%c✅ SUCCESS: Token Received!", "color: green; font-weight: bold;");
+
+        saveToken(token);
         clearVerifier();
-        navigate("/");
+
+        // Un-comment this when ready to go live
+        // navigate("/"); 
+        alert("Login Success! Token saved. (Redirect paused for testing)");
       })
       .catch((err) => {
-        console.error("OAuth error:", err);
-        alert("Session expired. Please reconnect your account.");
+        console.error("%c❌ OAuth Error:", "color: red; font-weight: bold;", err);
+        alert("Login Error. Check Console.");
         clearVerifier();
-        navigate("/");
+        // navigate("/"); // ⏸️ Commented out for debugging
       });
   }, [params, navigate]);
 
-  return <p>Connecting your TikTok Ads account…</p>;
+  return (
+    <div style={{ padding: 20 }}>
+      <h2>🔄 Processing Login...</h2>
+      <p>Check your Console (F12) for test logs.</p>
+    </div>
+  );
 }
