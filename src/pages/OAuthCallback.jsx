@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { saveToken } from "../utils/storage";
 
 export default function OAuthCallback() {
   const [params] = useSearchParams();
@@ -7,8 +8,13 @@ export default function OAuthCallback() {
 
   useEffect(() => {
     const code = params.get("code");
+    const error = params.get("error");
 
-    if (!code) {
+    // Log the code received from TikTok
+    console.log("TikTok OAuth Code:", code);
+    console.log("TikTok OAuth Error:", error);
+
+    if (error || !code) {
       alert("Authorization failed");
       navigate("/");
       return;
@@ -21,18 +27,21 @@ export default function OAuthCallback() {
     })
       .then((res) => res.json())
       .then((data) => {
-        if (!data.access_token) {
-          throw new Error();
+        console.log("Token exchange response:", data);
+
+        if (!data.success || !data.data?.access_token) {
+          throw new Error(data.error || "Token exchange failed");
         }
 
-        localStorage.setItem("tiktok_token", data.access_token);
+        saveToken(data.data.access_token);
         navigate("/");
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("OAuth error:", err);
         alert("Session expired. Please reconnect your account.");
         navigate("/");
       });
-  }, []);
+  }, [params, navigate]);
 
   return <p>Connecting your TikTok Ads account…</p>;
 }
