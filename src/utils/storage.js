@@ -6,6 +6,6 @@ export function isAuthenticated() {
   return Boolean(getAuthToken());
 }
 
-export function logOut() {
+export function logout() {
   return localStorage.removeItem("tiktok_token");
 }
