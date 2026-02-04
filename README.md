@@ -78,8 +78,5 @@ Implemented **Authorization Code Flow with PKCE** (Proof Key for Code Exchange) 
 * **Request Sanitization:** Transform the UI state (nested music object) into the flat structure required by the `submitAd` service.
 * **Loading Guards:** Disable the submit button during `isSubmitting` and `musicStatus === 'loading'` to prevent duplicate entries and race conditions.
 
-# Part 5 - Error Handlings
-
-
 # Notes
 
