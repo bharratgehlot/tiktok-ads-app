@@ -1,108 +1,166 @@
-/* ------------------ Layout ------------------ */
+/* =========================
+   Ad Form Container
+   ========================= */
 
 form {
-  max-width: 480px;
-  padding: 16px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  background: #ffffff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
-h2 {
+/* Headings */
+form h2 {
   margin-bottom: 16px;
-  font-size: 18px;
+  text-align: center;
 }
 
-h3 {
-  margin-top: 8px;
-  font-size: 15px;
+form h3 {
+  margin: 24px 0 12px;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-/* ------------------ Fields ------------------ */
+/* =========================
+   Field Groups
+   ========================= */
 
+form>div {
+  margin-bottom: 16px;
+}
+
+/* Labels */
 label {
-  font-size: 14px;
   font-weight: 500;
 }
 
-input,
+/* Inputs spacing */
+input[type="text"],
 select,
 textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 4px;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 14px;
+  margin-top: 6px;
 }
 
+/* Textarea sizing */
 textarea {
   min-height: 80px;
   resize: vertical;
 }
 
-/* ------------------ Buttons ------------------ */
-
-button {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 4px;
-  background: #111827;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-button[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-button+button {
-  margin-left: 8px;
-}
-
-/* ------------------ Music Section ------------------ */
-
-hr {
-  margin: 16px 0;
-  border: none;
-  border-top: 1px solid #e5e7eb;
-}
-
-input[type="radio"] {
-  margin-right: 6px;
-}
-
-/* ------------------ Messages ------------------ */
+/* =========================
+   Errors & Hints
+   ========================= */
 
 .error {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #dc2626;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #d93025;
+}
+
+.global-error {
+  background-color: #fdecea;
+  color: #611a15;
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  text-align: center;
 }
 
 .success {
-  margin-top: 4px;
-  font-size: 12px;
-  color: #16a34a;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #1a7f37;
 }
 
 .hint {
-  font-size: 12px;
-  color: #6b7280;
-  margin-top: 4px;
+  margin-top: 6px;
+  font-size: 13px;
+  color: #666;
 }
 
-/* ------------------ Global Error Banner ------------------ */
+/* =========================
+   Music Section
+   ========================= */
 
-.global-error {
-  margin-bottom: 12px;
-  padding: 10px;
-  border: 1px solid #fca5a5;
-  background: #fee2e2;
-  color: #991b1b;
-  font-size: 14px;
-  border-radius: 4px;
+hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 24px 0;
+}
+
+/* Radio layout */
+input[type="radio"] {
+  margin-right: 8px;
+}
+
+/* Nested music actions */
+form div>div {
+  margin-top: 8px;
+}
+
+/* Validate / Upload buttons */
+form button[type="button"] {
+  margin-top: 8px;
+  max-width: 200px;
+}
+
+/* =========================
+   Submit Button
+   ========================= */
+
+form button[type="submit"] {
+  margin-top: 24px;
+}
+
+/* =========================
+   Mobile Polish
+   ========================= */
+
+@media (max-width: 480px) {
+  form {
+    padding: 0;
+  }
+
+  form h2 {
+    font-size: 22px;
+  }
+}
+
+/* =========================
+   AdForm – Form Control Reset
+   ========================= */
+
+/* Normalize inputs inside AdForm only */
+form input,
+form select,
+form textarea {
+  background-color: #fff;
+  color: #111;
+  border: 1px solid #ccc;
+}
+
+/* Fix select appearance */
+form select {
+  appearance: auto;
+  -webkit-appearance: menulist;
+  background-color: #fff;
+}
+
+/* Radio buttons alignment */
+form input[type="radio"] {
+  width: auto;
+  margin-right: 8px;
+}
+
+/* Radio label layout */
+form label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Buttons inside AdForm should stay neutral */
+form button[type="button"] {
+  background-color: #000;
+  margin: 24px auto 0;
+  color: #fff;
 }

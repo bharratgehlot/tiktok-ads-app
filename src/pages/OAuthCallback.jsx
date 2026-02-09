@@ -1,96 +1,89 @@
 /*
- * TEST MODE: OAuthCallback.jsx
- * 1. Logs all incoming parameters.
- * 2. Checks for Verifier in storage.
- * 3. Attempts to call the Backend API (/api/oauth) for token exchange.
+ * PART 4: OAuthCallback.jsx
+ * 1. Receives authorization code
+ * 2. Validates PKCE verifier
+ * 3. Exchanges code for access token (mock)
  */
 
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { saveToken } from "../utils/storage";
-import { getVerifier, clearVerifier } from "../utils/pkce";
+import { useEffect, useState } from "react"
+import { useNavigate, useSearchParams } from "react-router-dom"
+import { getVerifier, clearVerifier } from "../utils/pkce"
+import { exchangeToken } from "../services/authService"
+import { useGlobalError } from "../context/GlobalErrorContext"
+import { saveToken } from "../utils/storage"
+
 
 export default function OAuthCallback() {
-  const [params] = useSearchParams();
-  const navigate = useNavigate();
+  const [params] = useSearchParams()
+  const navigate = useNavigate()
+  const { setError } = useGlobalError()
+
+  const [status, setStatus] = useState("processing")
 
   useEffect(() => {
-    // --- 🧪 TEST LOG 1: Check URL Parameters ---
-    const code = params.get("code");
-    const error = params.get("error");
+    const code = params.get("code")
+    const error = params.get("error")
+    const state = params.get("state")
 
-    console.log("%c1. 📥 Callback Received", "color: cyan; font-weight: bold;");
-    console.log("   Code:", code ? "✅ Present" : "❌ Missing");
-    console.log("   Error:", error || "None");
+    console.log("%c1. 📥 OAuth Callback Received", "color: cyan; font-weight: bold;")
+    console.log("   Code:", code ? "✅ Present" : "❌ Missing")
+    console.log("   State:", state ? "✅ Present" : "❌ Missing")
+    console.log("   Error:", error || "None")
 
     if (error || !code) {
-      console.error("❌ Authorization failed at TikTok level");
-      alert("Authorization failed (See Console)");
-      // navigate("/"); // ⏸️ Commented out for debugging
-      return;
+      setError("Authorization failed. Please try again.")
+      setStatus("error")
+      return
     }
 
-    // --- 🧪 TEST LOG 2: Check Session Storage ---
-    const verifier = getVerifier();
-    console.log("%c2. 🔐 Verifier Check", "color: cyan; font-weight: bold;");
-    console.log("   Verifier:", verifier ? "✅ Found in Storage" : "❌ Missing (Session Lost?)");
+    const verifier = getVerifier()
+
+    console.log("%c2. 🔐 PKCE Verifier Check", "color: cyan; font-weight: bold;")
+    console.log(
+      "   Verifier:",
+      verifier ? "✅ Found" : "❌ Missing"
+    )
 
     if (!verifier) {
-      console.error("❌ No verifier found. Did you skip the Home page login click?");
-      alert("Session error (See Console)");
-      // navigate("/"); // ⏸️ Commented out for debugging
-      return;
+      setError("Session expired. Please reconnect your TikTok account.")
+      setStatus("error")
+      return
     }
 
-    // --- 🧪 TEST LOG 3: Initiate Backend Exchange ---
-    console.log("%c3. 🚀 Sending to Backend (/api/oauth)", "color: cyan; font-weight: bold;");
+    console.log("%c3. 🔁 Exchanging Token (Mock)", "color: cyan; font-weight: bold;")
+    setStatus("exchanging")
 
-    // We switch this to call YOUR backend, as calling TikTok directly from browser usually fails CORS
-    fetch("/api/oauth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        code: code,
-        code_verifier: verifier, // Sending verifier for PKCE check
-      }),
-    })
-      .then((res) => {
-        console.log("   HTTP Status:", res.status);
-        return res.json();
+    exchangeToken({ code, codeVerifier: verifier })
+      .then((tokenData) => {
+        console.log("%c✅ Token Exchange Success", "color: green; font-weight: bold;", tokenData)
+
+        // ✅ Part 5: Persist token & finalize auth
+        saveToken(tokenData.access_token)
+        clearVerifier()
+
+        setStatus("success")
+
+        // Redirect to Home
+        navigate("/")
       })
-      .then((data) => {
-        // --- 🧪 TEST LOG 4: Handle Response ---
-        console.log("%c4. 📦 Backend Response", "color: cyan; font-weight: bold;", data);
+    
 
-        if (!data.success && !data.access_token) {
-          // Handle both your backend error format OR direct TikTok error format
-          throw new Error(data.error || data.error_description || "Token exchange failed");
-        }
-
-        const token = data.data?.access_token || data.access_token;
-        console.log("%c✅ SUCCESS: Token Received!", "color: green; font-weight: bold;");
-
-        saveToken(token);
-        clearVerifier();
-
-        // Un-comment this when ready to go live
-        // navigate("/"); 
-        alert("Login Success! Token saved. (Redirect paused for testing)");
-      })
       .catch((err) => {
-        console.error("%c❌ OAuth Error:", "color: red; font-weight: bold;", err);
-        alert("Login Error. Check Console.");
-        clearVerifier();
-        // navigate("/"); // ⏸️ Commented out for debugging
-      });
-  }, [params, navigate]);
+        console.error("❌ Token Exchange Failed", err)
+        setError(err.message || "Login failed during token exchange.")
+        clearVerifier()
+        setStatus("error")
+      })
+  }, [params, navigate, setError])
 
   return (
     <div style={{ padding: 20 }}>
       <h2>🔄 Processing Login...</h2>
-      <p>Check your Console (F12) for test logs.</p>
+
+      {status === "processing" && <p>Validating authorization response…</p>}
+      {status === "exchanging" && <p>Exchanging token…</p>}
+      {status === "success" && <p>✅ Login successful. Finalizing…</p>}
+      {status === "error" && <p>❌ Login failed.</p>}
     </div>
-  );
+  )
 }

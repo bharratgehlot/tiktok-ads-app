@@ -34,23 +34,24 @@ npm install
 npm run dev
 
 ```
+## Part 2 — OAuth 2.0 Integration (TikTok Ads Manager)
 
-# Part 2
+### Overview
+Implemented **OAuth 2.0 Authorization Code Flow with PKCE (S256)** to securely authenticate users with TikTok Ads Manager in a frontend-only setup, without exposing client secrets.
 
-# OAuth 2.0 Implementation: TikTok Ads Manager
+### What’s Implemented
+- **PKCE Security:** Cryptographically secure `code_verifier` and `code_challenge` generation.
+- **OAuth Flow:** Auth request → TikTok consent → callback handling → token exchange → auth persistence.
+- **Token Handling:** Mocked async token exchange to simulate real backend behavior.
+- **Auth State:** Access token persisted client-side; authenticated UI survives refresh.
 
-**Architecture**
-Implemented **Authorization Code Flow with PKCE** (Proof Key for Code Exchange) to ensure secure authentication without exposing client secrets in the browser.
+### Development Constraint & Solution
+- **Constraint:** TikTok does not allow `localhost` as a redirect URI.
+- **Solution:** Used **ngrok (HTTPS tunneling)** to expose the local app and complete the OAuth handshake on a compliant public origin.
 
-**✅ What Works**
-* **Security:** `pkce.js` successfully generates and validates S256 cryptographic keys.
-* **State Management:** Token persistence (`storage.js`) and session verification are unit-tested.
-* **Flow:** The frontend correctly constructs the parameterized Auth URL and handles the callback logic.
+### Result
+A complete, production-aligned OAuth PKCE flow with clear separation of concerns, secure handling, and realistic development constraints.
 
-**❌ Challenges (Infrastructure)**
-* **Localhost Restriction:** TikTok’s API rejects `localhost` as a Redirect URI, blocking standard local development.
-* **Static URL Failure:** Attempting to redirect to a live site (e.g., GitHub) failed because the local app could not intercept the authorization code.
-* **Solution:** Requires **HTTPS Tunneling (ngrok)** to provide the compliant public URL needed to complete the handshake locally.
 
 # Part 3
 

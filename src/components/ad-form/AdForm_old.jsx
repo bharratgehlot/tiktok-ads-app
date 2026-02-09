@@ -26,6 +26,7 @@ export default function AdForm() {
   const [musicError, setMusicError] = useState('')
 
   // Submission state
+  const [globalError, setGlobalError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   /* ------------------ helpers ------------------ */
@@ -97,6 +98,7 @@ export default function AdForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    setGlobalError('')
 
     const basicValid = validate()
     if (!basicValid) return
@@ -127,23 +129,18 @@ export default function AdForm() {
       })
 
       alert('Ad submitted successfully!')
-    } 
-    
-    catch (err) {
+    } catch (err) {
       // System-level errors → global banner
       if (err.type === 'geo') {
-        setError('Service not available in your region.')
+        setGlobalError('Service not available in your region.')
       } else if (err.type === 'auth') {
-        setError('Session expired. Please reconnect your TikTok account.')
+        setGlobalError('Session expired. Please reconnect your TikTok account.')
       } else if (err.type === 'permission') {
-        setError('Missing permission to create ads.')
+        setGlobalError('Missing permission to create ads.')
       } else {
-        setError(err.message || 'Something went wrong.')
+        setGlobalError(err.message || 'Something went wrong.')
       }
-      
-    }
-    
-    finally {
+    } finally {
       setIsSubmitting(false)
     }
   }
@@ -154,6 +151,9 @@ export default function AdForm() {
     <form onSubmit={handleSubmit}>
       <h2>Create Ad</h2>
 
+      {globalError && (
+        <div className="global-error">{globalError}</div>
+      )}
 
       {/* Campaign Name */}
       <div>

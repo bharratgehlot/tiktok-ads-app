@@ -1,13 +1,44 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Basic Meta -->
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>tiktok-ads-app</title>
+
+    <!-- App Identity -->
+    <title>Tiktok Ads Creative Flow | React + OAuth</title>
+    <meta
+      name="description"
+      content="A react-based simulation of Tik-Tok Ads creation setup flow featuring OAuth authentication, conditional validation, and robust error handling."
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/tik_tok_app.svg" />
+
+    <!-- Accessibility & UX -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="light dark" />
+
+    <!-- SEO / Optional but good practice -->
+
+    <meta property="og:title" content="TikTok Ads Creative Flow" />
+    <meta
+      property="og:description"
+      content="Frontend assignment demonstrating OAuth, mock APIs, and real-world error handling in React."
+    />
+    <meta property="og:type" content="website" />
   </head>
+
   <body>
-    <div id="root"></div>
+    <!-- Root App Container -->
+    <div id="root" aria-live="polite" ></div>
+
+    <!-- React Entry -->
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- JS Fallback -->
+     <noscript>
+      This application requires JavaScript to run. 
+     </noscript>
   </body>
 </html>
